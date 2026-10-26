@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_content"
+    android:background="?attr/colorSurface"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="org.schabi.newpipe.player.PlayQueueActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurface"
+        android:theme="@style/ToolbarTheme"
+        app:popupTheme="@style/ToolbarTheme">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_weight="1"
+            android:background="?attr/colorSurface"
+            android:theme="@style/ToolbarTheme"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:navigationIconTint="?attr/colorOnSurface"
+            app:subtitleTextColor="?attr/colorOnSurfaceVariant"
+            app:titleTextColor="?attr/colorOnSurface"
+            app:title="@string/app_name" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/play_queue"
+        android:paddingVertical="8dp"
+        android:clipToPadding="false"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/metadata"
+        android:layout_below="@id/appbar"
+        android:scrollbars="vertical"
+        app:layoutManager="LinearLayoutManager"
+        tools:listitem="@layout/play_queue_item" />
+
+    <org.schabi.newpipe.views.AudioVisualizerView
+        android:id="@+id/audio_visualizer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/metadata"
+        android:layout_below="@id/appbar"
+        android:background="?attr/colorSurface"
+        android:contentDescription="@string/audio_visualizer"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <org.schabi.newpipe.views.NewPipeTextView
+        android:id="@+id/seek_display"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_above="@id/metadata"
+        android:background="#c0000000"
+        android:paddingLeft="30dp"
+        android:paddingTop="5dp"
+        android:paddingRight="30dp"
+        android:paddingBottom="5dp"
+        android:textColor="@android:color/white"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        tools:ignore="RtlHardcoded"
+        tools:text="1:06:29"
+        tools:visibility="visible" />
+
+    <LinearLayout
+        android:id="@+id/metadata"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/progress_bar"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:orientation="vertical"
+        android:padding="8dp"
+        tools:ignore="RtlHardcoded,RtlSymmetry">
+
+        <org.schabi.newpipe.views.NewPipeTextView
+            android:id="@+id/song_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="marquee"
+            android:fadingEdge="horizontal"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            android:textSize="14sp"
+            tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis nec aliquam augue, eget cursus est. Ut id tristique enim, ut scelerisque tellus. Sed ultricies ipsum non mauris ultricies, commodo malesuada velit porta." />
+
+        <org.schabi.newpipe.views.NewPipeTextView
+            android:id="@+id/artist_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="marquee"
+            android:fadingEdge="horizontal"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            android:textSize="12sp"
+            tools:text="Duis posuere arcu condimentum lobortis mattis." />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:layout_above="@+id/playback_controls">
+
+        <org.schabi.newpipe.views.NewPipeTextView
+            android:id="@+id/current_time"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:minHeight="40dp"
+            android:text="-:--:--"
+            android:textColor="?attr/colorPrimary"
+            tools:ignore="HardcodedText"
+            tools:text="1:06:29" />
+
+
+        <androidx.appcompat.widget.AppCompatSeekBar
+            android:id="@+id/seek_bar"
+            style="@style/Widget.WizeStream.SeekBar"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:paddingStart="12dp"
+            android:paddingTop="6dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="4dp"
+            tools:progress="25"
+            tools:secondaryProgress="50" />
+
+        <org.schabi.newpipe.views.NewPipeTextView
+            android:id="@+id/end_time"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="-:--:--"
+            android:textColor="?attr/colorPrimary"
+            tools:ignore="HardcodedText"
+            tools:text="1:23:49" />
+
+        <org.schabi.newpipe.views.NewPipeTextView
+            android:id="@+id/live_sync"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:text="@string/duration_live"
+            android:textAllCaps="true"
+            android:textColor="?attr/colorPrimary"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/playback_controls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="12dp"
+        tools:ignore="RtlHardcoded">
+
+        <ImageButton
+            android:id="@+id/control_repeat"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_toLeftOf="@+id/control_backward"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_repeat"
+            android:contentDescription="@string/notification_action_repeat"
+            app:tint="?attr/colorPrimary"
+            />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/control_backward"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="0dp"
+            android:layout_toLeftOf="@+id/control_fast_rewind"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_previous"
+            android:tint="?attr/colorPrimary"
+            android:contentDescription="@string/previous_stream" />
+
+        <ImageButton
+            android:id="@+id/control_fast_rewind"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="0dp"
+            android:layout_toLeftOf="@id/control_play_pause"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/exo_legacy_controls_rewind"
+            android:contentDescription="@string/rewind"
+            app:tint="?attr/colorPrimary" />
+
+        <ImageButton
+            android:id="@+id/control_play_pause"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_pause"
+            android:contentDescription="@string/pause"
+            app:tint="?attr/colorPrimary"
+            />
+
+        <ProgressBar
+            android:id="@+id/control_progress_bar"
+            style="?android:attr/progressBarStyleLargeInverse"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:background="#00000000"
+            android:clickable="false"
+            android:indeterminate="true"
+            android:padding="2dp"
+            android:scaleType="fitCenter"
+            android:tint="?attr/colorPrimary"
+            android:visibility="invisible"
+            tools:visibility="visible" />
+
+
+        <ImageButton
+            android:id="@+id/control_fast_forward"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="0dp"
+            android:layout_toRightOf="@id/control_play_pause"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/exo_legacy_controls_fastforward"
+            android:contentDescription="@string/forward"
+            app:tint="?attr/colorPrimary" />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/control_forward"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="0dp"
+            android:layout_toRightOf="@+id/control_fast_forward"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_next"
+            android:tint="?attr/colorPrimary"
+            android:contentDescription="@string/next_stream" />
+
+        <ImageButton
+            android:id="@+id/control_shuffle"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_toRightOf="@+id/control_forward"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_shuffle"
+            android:contentDescription="@string/notification_action_shuffle"
+            app:tint="?attr/colorPrimary"
+            />
+
+    </RelativeLayout>
+</RelativeLayout>

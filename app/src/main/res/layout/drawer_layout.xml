@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.navigation.NavigationView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/navigation"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:background="?attr/colorSurface"
+    android:orientation="vertical"
+    app:headerLayout="@layout/drawer_header"
+    app:itemBackground="@drawable/drawer_navigation_item_background"
+    app:itemHorizontalPadding="16dp"
+    app:itemIconPadding="24dp"
+    app:itemIconTint="@color/drawer_navigation_icon_color"
+    app:itemRippleColor="?attr/colorControlHighlight"
+    app:itemTextColor="@color/drawer_navigation_text_color" />

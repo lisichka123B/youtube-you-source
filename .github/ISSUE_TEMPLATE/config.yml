@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: ❓ WizeStream questions
+    url: https://github.com/wizdom13/WizeStream/discussions
+    about: Ask a question or browse WizeStream community answers

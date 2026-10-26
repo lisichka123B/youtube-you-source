@@ -1,0 +1,336 @@
+package org.schabi.newpipe.fragments.list.videos;
+
+import org.schabi.newpipe.fragments.detail.VideoDetailFragment;
+import org.schabi.newpipe.learning.LearningPlaylistPanel;
+import io.reactivex.rxjava3.disposables.Disposable;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
+
+import org.schabi.newpipe.R;
+import org.schabi.newpipe.databinding.RelatedItemsHeaderBinding;
+import org.schabi.newpipe.error.UserAction;
+import org.schabi.newpipe.extractor.InfoItem;
+import org.schabi.newpipe.extractor.ListExtractor;
+import org.schabi.newpipe.extractor.stream.StreamInfo;
+import org.schabi.newpipe.extractor.stream.StreamInfoItem;
+import org.schabi.newpipe.fragments.list.BaseListInfoFragment;
+import org.schabi.newpipe.info_list.ItemViewMode;
+import org.schabi.newpipe.info_list.dialog.InfoItemDialog;
+import org.schabi.newpipe.ktx.ViewUtils;
+import org.schabi.newpipe.util.ContentBlockingHelper;
+
+import com.google.android.material.chip.Chip;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
+
+import io.reactivex.rxjava3.core.Single;
+
+public class RelatedItemsFragment extends BaseListInfoFragment<InfoItem, RelatedItemsInfo>
+        implements SharedPreferences.OnSharedPreferenceChangeListener {
+    private static final String INFO_KEY = "related_info_key";
+    private static final String WIDE_DETAIL_LAYOUT_KEY = "wide_detail_layout_key";
+
+    private RelatedItemsInfo relatedItemsInfo;
+    private static final String TOPIC_KEY = "related_topic";
+    private String selectedTopic = "";
+
+    /*//////////////////////////////////////////////////////////////////////////
+    // Views
+    //////////////////////////////////////////////////////////////////////////*/
+
+    private RelatedItemsHeaderBinding headerBinding;
+    private Disposable learningPanelSubscription;
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        observeLearningPlaylist();
+    }
+
+    @Override
+    public void onStop() {
+        clearLearningPlaylistObserver();
+        super.onStop();
+    }
+
+    private void clearLearningPlaylistObserver() {
+        if (learningPanelSubscription != null) {
+            learningPanelSubscription.dispose();
+            learningPanelSubscription = null;
+        }
+    }
+
+    private void observeLearningPlaylist() {
+        clearLearningPlaylistObserver();
+        if (headerBinding != null && getParentFragment()
+                instanceof VideoDetailFragment detail) {
+            learningPanelSubscription = LearningPlaylistPanel.observe(
+                    detail, headerBinding.learningPlaylistPanel, serviceId, url, true);
+        }
+    }
+
+    public static RelatedItemsFragment getInstance(final StreamInfo info) {
+        return getInstance(info, false);
+    }
+
+    public static RelatedItemsFragment getInstance(final StreamInfo info,
+                                                   final boolean wideDetailLayout) {
+        final RelatedItemsFragment instance = new RelatedItemsFragment();
+        final Bundle arguments = new Bundle();
+        arguments.putBoolean(WIDE_DETAIL_LAYOUT_KEY, wideDetailLayout);
+        instance.setArguments(arguments);
+        instance.setInitialData(info);
+        return instance;
+    }
+
+    public RelatedItemsFragment() {
+        super(UserAction.REQUESTED_STREAM);
+    }
+
+    @NonNull
+    @Override
+    protected ContentBlockingHelper.Target getContentBlockingTarget() {
+        return ContentBlockingHelper.Target.RELATED_ITEMS;
+    }
+
+    /*//////////////////////////////////////////////////////////////////////////
+    // LifeCycle
+    //////////////////////////////////////////////////////////////////////////*/
+
+    @Override
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_related_items, container, false);
+    }
+
+    @Override
+    protected void initViews(final View rootView, final Bundle savedInstanceState) {
+        final Bundle arguments = getArguments();
+        infoListAdapter.setUseWideRelatedVariant(
+                arguments != null && arguments.getBoolean(WIDE_DETAIL_LAYOUT_KEY, false));
+        super.initViews(rootView, savedInstanceState);
+    }
+
+    @Override
+    public void onDestroyView() {
+        clearLearningPlaylistObserver();
+        headerBinding = null;
+        super.onDestroyView();
+    }
+
+    @Override
+    protected Supplier<View> getListHeaderSupplier() {
+        headerBinding = RelatedItemsHeaderBinding
+                .inflate(activity.getLayoutInflater(), itemsList, false);
+
+        final SharedPreferences pref = PreferenceManager
+                .getDefaultSharedPreferences(requireContext());
+        final boolean autoplay = pref.getBoolean(getString(R.string.auto_queue_key), false);
+        headerBinding.autoplaySwitch.setChecked(autoplay);
+        headerBinding.autoplaySwitch.setOnCheckedChangeListener((compoundButton, b) ->
+                PreferenceManager.getDefaultSharedPreferences(requireContext()).edit()
+                        .putBoolean(getString(R.string.auto_queue_key), b).apply());
+
+        observeLearningPlaylist();
+        bindTopicFilters();
+        return headerBinding::getRoot;
+    }
+
+    private void bindTopicFilters() {
+        if (headerBinding == null || relatedItemsInfo == null) {
+            return;
+        }
+        final var group = headerBinding.topicChipGroup;
+        group.setOnCheckedStateChangeListener(null);
+        group.removeAllViews();
+        final List<String> topics = relatedItemsInfo.getTopics();
+        headerBinding.topicFilters.setVisibility(topics.isEmpty() ? View.GONE : View.VISIBLE);
+        if (!topics.contains(selectedTopic)) {
+            selectedTopic = "";
+        }
+        final List<String> choices = new ArrayList<>();
+        choices.add("");
+        choices.addAll(topics);
+        for (final String topic : choices) {
+            final Chip chip = (Chip) getLayoutInflater().inflate(
+                    R.layout.item_search_music_filter_chip, group, false);
+            chip.setId(View.generateViewId());
+            chip.setTag(topic);
+            chip.setText(topic.isEmpty() ? getString(R.string.all) : topic);
+            chip.setContentDescription(getString(R.string.related_topic_filter_description,
+                    chip.getText()));
+            group.addView(chip);
+            if (topic.equals(selectedTopic)) {
+                group.check(chip.getId());
+            }
+        }
+        group.setOnCheckedStateChangeListener((chips, ids) -> {
+            if (ids.isEmpty()) {
+                return;
+            }
+            final Chip chip = chips.findViewById(ids.get(0));
+            selectedTopic = (String) chip.getTag();
+            infoListAdapter.clearStreamItemList();
+            infoListAdapter.addInfoItemList(getDisplayItems(relatedItemsInfo.getRelatedItems()));
+            hideLoading();
+            showListFooter(false);
+            updateTopicEmptyMessage();
+            itemsList.scrollToPosition(0);
+        });
+    }
+
+    @Override
+    protected List<InfoItem> getDisplayItems(final List<InfoItem> items) {
+        return RelatedItemTopics.filter(items, selectedTopic);
+    }
+
+    private void updateTopicEmptyMessage() {
+        if (headerBinding != null) {
+            headerBinding.topicEmptyMessage.setVisibility(!selectedTopic.isEmpty()
+                    && infoListAdapter.getItemsList().isEmpty() ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    @Override
+    protected Single<ListExtractor.InfoItemsPage<InfoItem>> loadMoreItemsLogic() {
+        return Single.fromCallable(ListExtractor.InfoItemsPage::emptyPage);
+    }
+
+    /*//////////////////////////////////////////////////////////////////////////
+    // Contract
+    //////////////////////////////////////////////////////////////////////////*/
+
+    @Override
+    protected Single<RelatedItemsInfo> loadResult(final boolean forceLoad) {
+        return Single.fromCallable(() -> relatedItemsInfo);
+    }
+
+    @Override
+    public void showLoading() {
+        super.showLoading();
+        if (headerBinding != null) {
+            headerBinding.getRoot().setVisibility(View.INVISIBLE);
+        }
+    }
+
+    @Override
+    public void showEmptyState() {
+        if (!selectedTopic.isEmpty() || (getParentFragment()
+                instanceof VideoDetailFragment detail
+                && detail.hasLearningPlaylist(serviceId, url))) {
+            hideLoading();
+            showListFooter(false);
+        } else {
+            super.showEmptyState();
+        }
+    }
+
+    @Override
+    public void handleResult(@NonNull final RelatedItemsInfo result) {
+        relatedItemsInfo = result;
+        bindTopicFilters();
+        super.handleResult(result);
+        updateTopicEmptyMessage();
+
+        if (headerBinding != null) {
+            headerBinding.getRoot().setVisibility(View.VISIBLE);
+        }
+        ViewUtils.slideUp(requireView(), 120, 96, 0.06f);
+
+    }
+
+    /*//////////////////////////////////////////////////////////////////////////
+    // Utils
+    //////////////////////////////////////////////////////////////////////////*/
+
+    @Override
+    public void setTitle(final String title) {
+        // Nothing to do - override parent
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull final Menu menu,
+                                    @NonNull final MenuInflater inflater) {
+        // Nothing to do - override parent
+    }
+
+    private void setInitialData(final StreamInfo info) {
+        super.setInitialData(info.getServiceId(), info.getUrl(), info.getName());
+        if (this.relatedItemsInfo == null) {
+            this.relatedItemsInfo = new RelatedItemsInfo(info);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(INFO_KEY, relatedItemsInfo);
+        outState.putString(TOPIC_KEY, selectedTopic);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull final Bundle savedState) {
+        super.onRestoreInstanceState(savedState);
+        selectedTopic = savedState.getString(TOPIC_KEY, "");
+        final Serializable serializable = savedState.getSerializable(INFO_KEY);
+        if (serializable instanceof RelatedItemsInfo) {
+            this.relatedItemsInfo = (RelatedItemsInfo) serializable;
+        }
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences,
+                                          final String key) {
+        if (headerBinding != null && getString(R.string.auto_queue_key).equals(key)) {
+            headerBinding.autoplaySwitch.setChecked(sharedPreferences.getBoolean(key, false));
+        }
+        super.onSharedPreferenceChanged(sharedPreferences, key);
+    }
+
+    @Override
+    protected ItemViewMode getItemViewMode() {
+        ItemViewMode mode = super.getItemViewMode();
+        // Only list mode is supported. Either List or card will be used.
+        if (mode != ItemViewMode.LIST && mode != ItemViewMode.CARD) {
+            mode = ItemViewMode.LIST;
+        }
+        return mode;
+    }
+
+    @Override
+    protected void showInfoItemDialog(final StreamInfoItem item) {
+        // Try and attach the InfoItemDialog to the parent fragment of the RelatedItemsFragment
+        // so that its context is not lost when the RelatedItemsFragment is reinitialized,
+        // e.g. when a new stream is loaded in a parent VideoDetailFragment.
+        final Fragment parentFragment = getParentFragment();
+        if (parentFragment != null) {
+            try {
+                new InfoItemDialog.Builder(
+                        parentFragment.getActivity(),
+                        parentFragment.getContext(),
+                        parentFragment,
+                        item
+                ).create().show();
+            } catch (final IllegalArgumentException e) {
+                InfoItemDialog.Builder.reportErrorDuringInitialization(e, item);
+            }
+        } else {
+            super.showInfoItemDialog(item);
+        }
+    }
+
+}

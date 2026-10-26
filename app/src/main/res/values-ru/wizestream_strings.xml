@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="wizestream_about_title">О MaterialTube</string>
+    <string name="wizestream_fork_title">MaterialTube</string>
+    <string name="wizestream_version_format">Версия %1$s</string>
+    <string name="wizestream_fork_attribution">MaterialTube — независимо развиваемое Android-приложение для просмотра видео на основе NewPipe. Проект не связан с официальным проектом NewPipe, TeamNewPipe или NewPipe e.V. и не поддерживается ими.</string>
+    <string name="wizestream_author_developer">Разработчик: skitfe</string>
+    <string name="wizestream_upstream_title">Благодарности проекту NewPipe</string>
+    <string name="wizestream_upstream_attribution">MaterialTube создан на основе NewPipe и сохраняет лицензию свободного программного обеспечения NewPipe, сведения об авторах и уведомления о сторонних лицензиях.</string>
+    <string name="wizestream_contribution_title">Поддержать MaterialTube</string>
+    <string name="wizestream_contribution_encouragement">Новости и поддержка проекта — в Telegram-канале.</string>
+</resources>

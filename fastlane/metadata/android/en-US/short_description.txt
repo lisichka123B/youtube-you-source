@@ -1,0 +1,1 @@
+Independent, privacy-friendly NewPipe-based streaming client.

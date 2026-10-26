@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@color/dark_m3_secondary_container_color" />
+
+    <item
+        android:drawable="@drawable/materialtube_logo"
+        android:gravity="center" />
+</layer-list>

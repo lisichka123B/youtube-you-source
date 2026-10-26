@@ -1,0 +1,95 @@
+name: Bug report
+description: Report a problem in WizeStream
+labels: [bug, needs triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping improve WizeStream by reporting a bug. :hugs:
+
+        Please provide enough detail for the problem to be reproduced and investigated.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: "I can reproduce the bug with the latest WizeStream release available from this repository."
+          required: true
+        - label: "I checked the [open](https://github.com/wizdom13/WizeStream/issues) and [closed](https://github.com/wizdom13/WizeStream/issues?q=is%3Aissue+is%3Aclosed) issues for an existing report."
+          required: true
+        - label: "This issue contains only one bug."
+          required: true
+        - label: "I understand that WizeStream maintains its integrated extractor changes and may ask whether this problem is also reproducible in official NewPipe."
+          required: true
+
+  - type: input
+    id: app-version
+    attributes:
+      label: Affected WizeStream version
+      description: "Which WizeStream version shows the problem?"
+      placeholder: "Example: 1.0.0 — shown in About"
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Describe exactly what you did before the problem appeared.
+      placeholder: |
+        1. Open ...
+        2. Tap ...
+        3. Observe ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected behavior
+      description: Describe what you expected to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual behavior
+      description: Describe what happened instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: screen-media
+    attributes:
+      label: Screenshots or screen recordings
+      description: Attach visual evidence when it helps explain the problem. For crashes, paste the formatted report in the Logs field instead of only posting a screenshot.
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: For a crash, tap "Copy formatted report" on the Error Report screen and paste it here.
+
+  - type: input
+    id: device-os-info
+    attributes:
+      label: Android or custom ROM version
+      placeholder: "Example: Android 16 / LineageOS 23"
+    validations:
+      required: true
+
+  - type: input
+    id: device-model-info
+    attributes:
+      label: Device model
+      placeholder: "Example: Google Pixel 10 Pro XL"
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-information
+    attributes:
+      label: Additional information
+      description: Include anything else that may affect reproduction, such as TV or foldable mode, disabled animations, network conditions, or storage configuration.

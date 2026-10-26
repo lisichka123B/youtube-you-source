@@ -1,0 +1,50 @@
+name: Feature request
+description: Suggest an improvement for WizeStream
+labels: [feature request, needs triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping improve WizeStream by suggesting a feature. :hugs:
+
+        Please explain the user problem as well as the proposed behavior.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: "I checked the [open](https://github.com/wizdom13/WizeStream/issues) and [closed](https://github.com/wizdom13/WizeStream/issues?q=is%3Aissue+is%3Aclosed) issues for an existing request."
+          required: true
+        - label: "This issue contains only one feature request."
+          required: true
+        - label: "I understand that requests for new supported services require changes to WizeStream's integrated extractor source."
+          required: true
+
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Feature description
+      description: Explain how you want WizeStream's appearance or behavior to change.
+    validations:
+      required: true
+
+  - type: textarea
+    id: why-is-the-feature-requested
+    attributes:
+      label: Problem this would solve
+      description: Describe the problem, limitation, or use case addressed by the proposal.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-behavior
+    attributes:
+      label: Proposed behavior
+      description: Describe the expected interaction or result in enough detail to evaluate it.
+
+  - type: textarea
+    id: additional-information
+    attributes:
+      label: Additional information
+      description: Add sketches, mockups, comparisons, or other useful context.

@@ -1,0 +1,24 @@
+package org.schabi.newpipe.player.event;
+
+import androidx.media3.common.PlaybackException;
+
+public interface PlayerServiceEventListener extends PlayerEventListener {
+    void onViewCreated();
+
+    void onFullscreenStateChanged(boolean fullscreen);
+
+    /** Called after the main player has re-enabled video on return from the background. */
+    void onVideoPlaybackResumed();
+
+    void onScreenRotationButtonClicked(boolean fullscreen);
+
+    default void onManualFullscreenButtonClicked(final boolean fullscreen) {
+        onScreenRotationButtonClicked(fullscreen);
+    }
+
+    void onMoreOptionsLongClicked();
+
+    void onPlayerError(PlaybackException error, boolean isCatchableException);
+
+    void hideSystemUiIfNeeded();
+}
