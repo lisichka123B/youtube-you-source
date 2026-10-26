@@ -20,7 +20,7 @@ MaterialTube — модифицированный YouTube-клиент на ос
 
 🌐 ForkForum
 
-"ForkForum" (ava.png)
+![Аватарка](ava.png)
 
 ForkForum — сообщество для обмена приложениями и общения.
 
